@@ -235,3 +235,250 @@ Returned when the token is missing, invalid, or already blacklisted.
 ### Notes
 - The logout endpoint invalidates the current token via blacklist storage.
 - The JWT token must be provided in either the cookie or Authorization header.
+
+---
+
+## Captain Registration
+
+### Endpoint
+- Method: POST
+- URL: /captains/register
+
+### Description
+This endpoint registers a new captain with vehicle details, hashes the password, and returns a JWT token on success.
+
+### Required Request Body
+The request body must be in JSON format.
+
+```json
+{
+  "fullname": {
+    "firstname": "John",
+    "lastname": "Doe"
+  },
+  "email": "john@example.com",
+  "password": "123456",
+  "vehicle": {
+    "color": "Black",
+    "licensePlate": "ABC123",
+    "capacity": 4,
+    "type": "car"
+  }
+}
+```
+
+### Required Fields
+- fullname: required, minimum 3 characters
+- email: required, must be a valid email address
+- password: required, minimum 6 characters
+- vehicle.color: required
+- vehicle.licensePlate: required
+- vehicle.capacity: required, integer greater than or equal to 1
+- vehicle.type: required, one of `car`, `auto`, or `bike`
+
+### Success Response body
+#### Status: 201 Created
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "captain": {
+    "_id": "64f1a2b3c4d5e6f7a8b9c0d1",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com",
+    "vehicle": {
+      "color": "Black",
+      "licensePlate": "ABC123",
+      "capacity": 4,
+      "type": "car"
+    }
+  }
+}
+```
+
+### Error Responses
+#### Status: 400 Bad Request
+Returned when validation fails or required data is missing.
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Full name must be at least 3 characters long"
+    }
+  ]
+}
+```
+
+### Notes
+- The captain password is hashed before storage.
+- A JWT token is returned on successful registration.
+
+---
+
+## Captain Login
+
+### Endpoint
+- Method: POST
+- URL: /captains/login
+
+### Description
+This endpoint logs in an existing captain by verifying email and password, returns a JWT token and captain details.
+
+### Required Request Body
+The request body must be in JSON format.
+
+```json
+{
+  "email": "john@example.com",
+  "password": "123456"
+}
+```
+
+### Required Fields
+- email: required, must be a valid email address
+- password: required, minimum 6 characters
+
+### Example Request
+```bash
+POST /captains/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "123456"
+}
+```
+
+### Success Response body
+#### Status: 200 OK
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "captain": {
+    "_id": "64f1a2b3c4d5e6f7a8b9c0d1",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com",
+    "vehicle": {
+      "color": "Black",
+      "licensePlate": "ABC123",
+      "capacity": 4,
+      "type": "car"
+    }
+  }
+}
+```
+
+### Error Responses
+#### Status: 401 Unauthorized
+Returned when the provided email does not exist.
+
+```json
+{
+  "error": "Invalid email or password"
+}
+```
+
+#### Status: 400 Bad Request
+Returned when the password is incorrect or validation fails.
+
+```json
+{
+  "error": "Invalid email or password"
+}
+```
+
+### Notes
+- The login endpoint checks the stored password against the submitted password.
+- A JWT token is returned on successful login.
+
+---
+
+## Captain Profile
+
+### Endpoint
+- Method: GET
+- URL: /captains/profile
+
+### Description
+This endpoint returns the authenticated captain's profile information. It requires a valid JWT token provided either in the `token` cookie or the `Authorization: Bearer <token>` header.
+
+### Success Response body
+#### Status: 200 OK
+
+```json
+{
+  "captain": {
+    "_id": "64f1a2b3c4d5e6f7a8b9c0d1",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com",
+    "vehicle": {
+      "color": "Black",
+      "licensePlate": "ABC123",
+      "capacity": 4,
+      "type": "car"
+    }
+  }
+}
+```
+
+### Error Responses
+#### Status: 401 Unauthorized
+Returned when the token is missing, invalid, or blacklisted.
+
+```json
+{
+  "error": "Access denied. No token provided."
+}
+```
+
+### Notes
+- This endpoint is protected by authentication middleware.
+- It returns the current captain's details without exposing the password.
+
+---
+
+## Captain Logout
+
+### Endpoint
+- Method: POST
+- URL: /captains/logout
+
+### Description
+This endpoint logs the authenticated captain out by blacklisting the current JWT token and clearing the `token` cookie.
+
+### Request Body
+No request body is required.
+
+### Success Response body
+#### Status: 200 OK
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Error Responses
+#### Status: 401 Unauthorized
+Returned when the token is missing, invalid, or already blacklisted.
+
+```json
+{
+  "error": "Access denied. No token provided."
+}
+```
+
+### Notes
+- The logout endpoint invalidates the current token via blacklist storage.
+- The JWT token must be provided in either the cookie or Authorization header.

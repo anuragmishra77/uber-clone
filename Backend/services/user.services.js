@@ -5,7 +5,7 @@ const createUser = async ({
     lastname,
     email,
     password
-}) => {
+ }) => {
 
     if (!firstname || !lastname || !email || !password) {
         throw new Error('All fields are required');
