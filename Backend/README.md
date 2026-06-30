@@ -157,3 +157,81 @@ Returned when the password is incorrect or validation fails.
 - The login endpoint checks the stored password against the submitted password.
 - A JWT token is returned on successful login.
 - The endpoint validates the email and password format.
+
+---
+
+## User Profile
+
+### Endpoint
+- Method: GET
+- URL: /users/profile
+
+### Description
+This endpoint returns the authenticated user's profile information. It requires a valid JWT token provided either in the `token` cookie or the `Authorization: Bearer <token>` header.
+
+### Success Response body
+#### Status: 200 OK
+
+```json
+{
+  "user": {
+    "_id": "64f1a2b3c4d5e6f7a8b9c0d1",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john@example.com"
+  }
+}
+```
+
+### Error Responses
+#### Status: 401 Unauthorized
+Returned when the token is missing, invalid, or blacklisted.
+
+```json
+{
+  "error": "Access denied. No token provided."
+}
+```
+
+### Notes
+- This endpoint is protected by authentication middleware.
+- It returns the current user's details without exposing the password.
+
+---
+
+## User Logout
+
+### Endpoint
+- Method: POST
+- URL: /users/logout
+
+### Description
+This endpoint logs the authenticated user out by blacklisting the current JWT token and clearing the `token` cookie.
+
+### Request Body
+No request body is required.
+
+### Success Response body
+#### Status: 200 OK
+
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Error Responses
+#### Status: 401 Unauthorized
+Returned when the token is missing, invalid, or already blacklisted.
+
+```json
+{
+  "error": "Access denied. No token provided."
+}
+```
+
+### Notes
+- The logout endpoint invalidates the current token via blacklist storage.
+- The JWT token must be provided in either the cookie or Authorization header.
