@@ -10,11 +10,22 @@ module.exports.registerUser = async (req , res , next) => {
         return res.status(400).json( {errors: errors.array()} );
 
 const {fullname, email  , password} = req.body;
-  // console.log(req.body);
+  console.log(req.body);
   const isUserExists = await userModel.findOne({ email });
-  if (isUserExists) {
-    return res.status(400).json({ error: 'User with this email already exists' });
-  }
+  console.log(isUserExists);
+  console.log("Email:", email);
+
+console.log("isUserExists:", isUserExists);
+console.log("Boolean(isUserExists):", Boolean(isUserExists));
+
+if (isUserExists) {
+    console.log("Inside if block");
+    return res.status(400).json({
+        error: "HELLO FROM REGISTER CONTROLLER"
+    });
+}
+
+console.log("Creating user...");
 const hashedPassword = await userModel.hashPassword(password);
 
 const user = await userServices.createUser({

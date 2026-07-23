@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useContext } from "react";
+import { CaptainDataContext } from "../Context/Captaincontext.jsx"; 
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 function CaptainLogin() {
     const navigate = useNavigate();
+    const { setCaptain } = useContext(CaptainDataContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -16,29 +20,22 @@ function CaptainLogin() {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE}/captains/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({ email, password }),
+            const response = await axios.post(`${API_BASE}/captains/login`, {
+                email,
+                password
+            }, {
+                withCredentials: true
             });
-
-            const data = await response.json();
-            if (!response.ok) {
-                setError(data.error || (data.errors && data.errors[0]?.msg) || "Login failed");
-                setLoading(false);
-                return;
-            }
+            const data = response.data;
 
             if (data.token) {
                 localStorage.setItem("token", data.token);
+                setCaptain(data.captain);
             }
 
-            navigate("/");
+            navigate("/captainhome");
         } catch (err) {
-            setError("Unable to login. Please try again.");
+            setError("Unable to login. Please try again." || (err.response && err.response.data && err.response.data.error) || "Login failed");
         } finally {
             setLoading(false);
         }

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useContext } from "react";
+import { UserDataContext } from "../Context/Usercontext.jsx";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:4000";
 
 function UserSignup() {
     const navigate = useNavigate();
+    const { setUser } = useContext(UserDataContext);
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
     const [email, setEmail] = useState("");
@@ -12,45 +16,55 @@ function UserSignup() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setError("");
-        setLoading(true);
+   const handleSubmit = async (event) => {
+    event.preventDefault();
 
-        try {
-            const response = await fetch(`${API_BASE}/users/register`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+    setError("");
+    setLoading(true);
+
+    try {
+        const response = await axios.post(
+            `${API_BASE}/users/register`,
+            {
+                fullname: {
+                    firstname,
+                    lastname,
                 },
-                body: JSON.stringify({
-                    fullname: {
-                        firstname,
-                        lastname,
-                    },
-                    email,
-                    password,
-                }),
-            });
-
-            const data = await response.json();
-            if (!response.ok) {
-                setError(data.error || (data.errors && data.errors[0]?.msg) || "Signup failed");
-                setLoading(false);
-                return;
+                email,
+                password,
+            },
+            {
+                withCredentials: true,
             }
+        );
 
-            if (data.token) {
-                localStorage.setItem("token", data.token);
-            }
+        const data = response.data;
 
-            navigate("/login");
-        } catch (err) {
-            setError("Unable to complete signup. Please try again.");
-        } finally {
-            setLoading(false);
+        console.log("Success:", data);
+
+        if (data.token) {
+            localStorage.setItem("token", data.token);
+            setUser(data.user);
         }
-    };
+
+        navigate("/home");
+
+    } catch (err) {
+        console.log("Axios Error:", err);
+        console.log("Response:", err.response);
+        console.log("Message:", err.message);
+
+        setError(
+            err.response?.data?.error ||
+            err.response?.data?.message ||
+            err.response?.data?.errors?.[0]?.msg ||
+            err.message ||
+            "Signup failed"
+        );
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <div className="h-screen bg-gray-800 flex justify-center items-center">

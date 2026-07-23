@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useContext } from "react";
+import { CaptainDataContext } from "../Context/Captaincontext.jsx";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+const API_BASE = import.meta.env.VITE_BASE_URL || "http://localhost:4000";
 
 function CaptainSignup() {
     const navigate = useNavigate();
+    const { setCaptain } = useContext(CaptainDataContext);
     const [firstname, setFirstname] = useState("");
     const [lastname, setLastname] = useState("");
     const [email, setEmail] = useState("");
@@ -22,41 +26,33 @@ function CaptainSignup() {
         setLoading(true);
 
         try {
-            const response = await fetch(`${API_BASE}/captains/register`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
+            const response = await axios.post(`${API_BASE}/captains/register`, {
+                fullname: {
+                    firstname,
+                    lastname
                 },
-                body: JSON.stringify({
-                    fullname: {
-                        firstname,
-                        lastname,
-                    },
-                    email,
-                    password,
-                    vehicle: {
-                        type: vehicleType,
-                        color: vehicleColor,
-                        licensePlate,
-                        capacity: Number(capacity),
-                    },
-                }),
+                email,
+                password,
+                vehicle: {
+                    type: vehicleType,
+                    color: vehicleColor,
+                    licensePlate,
+                    capacity: Number(capacity)
+                }
+            }, {
+                withCredentials: true
             });
 
-            const data = await response.json();
-            if (!response.ok) {
-                setError(data.error || (data.errors && data.errors[0]?.msg) || "Signup failed");
-                setLoading(false);
-                return;
-            }
+            const data = response.data;
 
             if (data.token) {
                 localStorage.setItem("token", data.token);
+                setCaptain(data.captain);
             }
 
-            navigate("/captainlogin");
+            navigate("/captainhome");
         } catch (err) {
-            setError("Unable to complete signup. Please try again.");
+            setError("Unable to complete signup. Please try again." || (err.response && err.response.data && err.response.data.error) || "Signup failed");
         } finally {
             setLoading(false);
         }

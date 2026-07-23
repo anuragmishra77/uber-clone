@@ -1,33 +1,78 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
-function Home() {
-  const navigate = useNavigate();
-  
+const UserHome = () => {
   return (
-    <div className="h-screen bg-gray-800 flex items-center justify-center">
+    <div className="h-screen w-full relative overflow-hidden">
 
-      <div className="w-[350px] bg-gray-200 rounded-2xl shadow-xl overflow-hidden">
+      {/* Uber Logo */}
+      <img
+        className="w-20 absolute left-5 top-5 z-10"
+        src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+        alt="Uber Logo"
+      />
 
-        <img
-          src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=800"
-          alt="Uber"
-          className="w-full h-100 object-cover"
-        />
+      {/* Map Placeholder */}
+      <div className="h-full w-full bg-gray-300 flex items-center justify-center">
+        <h1 className="text-3xl font-semibold text-gray-600">
+          Google Map
+        </h1>
+      </div>
 
-        <div className="p-6 flex-col items-center">
+      {/* Bottom Panel */}
+      <div className="absolute bottom-0 w-full bg-white rounded-t-3xl p-6 shadow-2xl">
 
-          <h1 className="text-3xl font-bold mb-7 items-center text-center">
-            Welcome
-          </h1>
+        <h2 className="text-2xl font-bold mb-5">
+          Where to?
+        </h2>
 
-          <Link
-            className="bg-black text-white py-3 rounded-lg text-lg font-semibold hover:bg-gray-800 transition px-2 text-center w-full block text-center"
-            to="/login"
-          >
-            Continue
-          </Link>
+        <div className="space-y-4">
+
+          <input
+            type="text"
+            placeholder="Enter Pickup Location"
+            className="w-full bg-gray-100 rounded-lg px-4 py-3 outline-none"
+          />
+
+          <input
+            type="text"
+            placeholder="Enter Destination"
+            className="w-full bg-gray-100 rounded-lg px-4 py-3 outline-none"
+          />
+
+        </div>
+
+        {/* Recent Locations */}
+
+        <div className="mt-6">
+
+          <h3 className="text-gray-500 font-semibold mb-3">
+            Recent Places
+          </h3>
+
+          <div className="space-y-3">
+
+            <div className="flex items-center gap-4">
+              <div className="bg-gray-200 h-10 w-10 rounded-full flex items-center justify-center">
+                📍
+              </div>
+              <p>Home</p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="bg-gray-200 h-10 w-10 rounded-full flex items-center justify-center">
+                💼
+              </div>
+              <p>Office</p>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="bg-gray-200 h-10 w-10 rounded-full flex items-center justify-center">
+                🎓
+              </div>
+              <p>NIT Silchar</p>
+            </div>
+
+          </div>
 
         </div>
 
@@ -35,6 +80,6 @@ function Home() {
 
     </div>
   );
-}
+};
 
-export default Home;
+export default UserHome;
