@@ -1,6 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
+
 
 const UserHome = () => {
+
+  const [pickup, setPickup] = useState("");
+  const [destination, setDestination] = useState("");
+
   return (
     <div className="h-screen w-full relative overflow-hidden">
 
@@ -27,14 +32,20 @@ const UserHome = () => {
 
         <div className="space-y-4">
 
+          {/* Pickup Input */}
           <input
             type="text"
+            value={pickup}
+            onChange={(e) => setPickup(e.target.value)}
             placeholder="Enter Pickup Location"
             className="w-full bg-gray-100 rounded-lg px-4 py-3 outline-none"
           />
 
+          {/* Destination Input */}
           <input
             type="text"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
             placeholder="Enter Destination"
             className="w-full bg-gray-100 rounded-lg px-4 py-3 outline-none"
           />
@@ -42,7 +53,6 @@ const UserHome = () => {
         </div>
 
         {/* Recent Locations */}
-
         <div className="mt-6">
 
           <h3 className="text-gray-500 font-semibold mb-3">
